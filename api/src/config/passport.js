@@ -49,6 +49,7 @@ module.exports = function (passport) {
         callbackURL: "http://localhost:3001/auth/github/callback",
       },
       async function (accessToken, refreshToken, profile, cb) {
+        console.log(profile);
         const userExist = await User.findOne({
           where: {
             email: profile.profileUrl,

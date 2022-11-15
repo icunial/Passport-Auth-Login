@@ -12,6 +12,8 @@ const server = express();
 
 server.name = "API";
 
+require("./config/passport.js")(passport);
+
 server.use(bodyParser.urlencoded({ extended: true, limit: "50mb" }));
 server.use(bodyParser.json({ limit: "50mb" }));
 server.use(morgan("dev"));
@@ -29,13 +31,9 @@ server.use((req, res, next) => {
 // Express Session
 server.use(
   session({
-    secret: "secretcode",
+    secret: "secret",
     resave: true,
     saveUninitialized: true,
-    cookie: {
-      sameSite: "strict",
-      maxAge: 24 * 60 * 60 * 1000,
-    },
   })
 );
 
@@ -43,7 +41,6 @@ server.use(cookieParser("secretcode"));
 
 server.use(passport.initialize());
 server.use(passport.session());
-require("./config/passport.js")(passport);
 
 server.use("/", routes);
 

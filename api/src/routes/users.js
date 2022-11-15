@@ -8,28 +8,6 @@ const bcrypt = require("bcryptjs");
 
 const passport = require("passport");
 
-const nodemailer = require("nodemailer");
-const fs = require("fs");
-const { promisify } = require("util");
-const readFile = promisify(fs.readFile);
-
-const transporter = nodemailer.createTransport({
-  host: "smtp.gmail.com",
-  port: 587, // port for secure SMTP
-  auth: {
-    user: "e.winemarketplace@gmail.com",
-    pass: "yrzjdsfbehvmxtvt",
-  },
-});
-
-router.get("/login", (req, res) => {
-  res.send("Login");
-});
-
-router.get("/register", (req, res) => {
-  res.send("Register");
-});
-
 router.get("/", async (req, res) => {
   try {
     const users = await User.findAll();
@@ -72,29 +50,6 @@ router.post("/register", async (req, res) => {
       password: await bcrypt.hash(password, 10),
     });
 
-    var mailOptions = {
-      from: "e.winemarketplace@hotmail.com",
-      to: email,
-      subject: "Creaste tu cuenta en E-Wines",
-      /* html: `<h1>Gracias por registrarte en nuestra app!</h1>
-      <a href="http://e-wine-ashen.vercel.app/">http://e-wine-ashen.vercel.app/</a>`, */
-      html: await readFile("./message.html", "utf-8"),
-      attachments: [
-        {
-          filename: "logo.jpeg",
-          path: "./logo.jpeg",
-        },
-      ],
-    };
-
-    /*   await transporter.sendMail(mailOptions, function (error, info) {
-      if (error) {
-        console.log(error);
-      } else {
-        console.log("Email sent: " + info.response);
-      }
-    }); */
-
     res.status(201).json(true);
   } catch (error) {
     res.status(400).json(error.message);
@@ -112,20 +67,11 @@ router.post("/login", (req, res, next) => {
   })(req, res, next);
 });
 
-router.get("/logout", (req, res, next) => {
-  /* req.session.destroy(function (err) {
-    if (err) return next(err);
-  }); */
-  req.logOut(function (err) {
-    if (err) return next(err);
-  });
-  res.clearCookie("connect.sid");
-  res.send(false);
-
-  /* req.logout(function (err) {
+router.get("/logout", async (req, res, next) => {
+  req.logout(function (err) {
     if (err) return next(err);
     res.send(false);
-  }); */
+  });
 });
 
 router.get("/user", (req, res) => {
