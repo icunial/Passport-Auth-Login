@@ -4,11 +4,15 @@ import styles from "./Login.module.css";
 
 import { Link } from "react-router-dom";
 
+import { useHistory } from "react-router-dom";
+
 function Login() {
   const [input, setInput] = useState({
     email: "",
     password: "",
   });
+
+  const history = useHistory();
 
   const handleInputChange = (e) => {
     setInput((input) => {
@@ -45,10 +49,26 @@ function Login() {
             className={styles.login}
             onClick={(e) => {
               e.preventDefault();
+              fetch("http://localhost:3001/users/login", {
+                method: "POST",
+                body: JSON.stringify({
+                  email: input.email,
+                  password: input.password,
+                }),
+                headers: {
+                  "Content-type": "application/json",
+                },
+                credentials: "include",
+              })
+                .then((res) => res.json())
+                .then((data) => history.push("/dashboard"));
             }}
           >
             Login
           </button>
+          <a href="http://localhost:3001/auth/google" className={styles.login}>
+            Google
+          </a>
         </form>
         <p>
           No Account?{" "}

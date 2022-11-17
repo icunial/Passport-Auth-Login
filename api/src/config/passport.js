@@ -5,9 +5,13 @@ const passport = require("./passport");
 
 const { v4: uuid4 } = require("uuid");
 
-const GithubStrategy = require("passport-github").Strategy;
+const GoogleStrategy = require("passport-google-oauth20").Strategy;
+
+require("dotenv").config();
+
+/* const GithubStrategy = require("passport-github").Strategy;
 const GITHUB_CLIENT_ID = "16195f4d0c06b0663b86";
-const GITHUB_CLIENT_SECRET = "409469fba5224953aa8f3bce01db250b9e6d7957";
+const GITHUB_CLIENT_SECRET = "409469fba5224953aa8f3bce01db250b9e6d7957"; */
 
 module.exports = function (passport) {
   passport.use(
@@ -42,6 +46,19 @@ module.exports = function (passport) {
   );
 
   passport.use(
+    new GoogleStrategy(
+      {
+        clientID: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+        callbackURL: "/auth/google/callback",
+      },
+      async (accessToken, refreshToken, profile, done) => {
+        console.log(profile);
+      }
+    )
+  );
+
+  /*   passport.use(
     new GithubStrategy(
       {
         clientID: GITHUB_CLIENT_ID,
@@ -69,7 +86,7 @@ module.exports = function (passport) {
         }
       }
     )
-  );
+  ); */
 
   // Create a Cookie!
   passport.serializeUser(function (user, done) {

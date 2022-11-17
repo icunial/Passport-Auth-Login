@@ -4,6 +4,8 @@ import styles from "./Register.module.css";
 
 import { Link } from "react-router-dom";
 
+import { useHistory } from "react-router-dom";
+
 function Register() {
   const [input, setInput] = useState({
     name: "",
@@ -22,6 +24,8 @@ function Register() {
       return newInput;
     });
   };
+
+  const history = useHistory();
 
   return (
     <div className={styles.globalContainer}>
@@ -60,6 +64,24 @@ function Register() {
             className={styles.register}
             onClick={(e) => {
               e.preventDefault();
+
+              fetch("http://localhost:3001/users/register", {
+                method: "POST",
+                body: JSON.stringify({
+                  name: input.name,
+                  email: input.email,
+                  password: input.password,
+                  password2: input.password2,
+                }),
+                headers: {
+                  "Content-type": "application/json",
+                },
+                credentials: "include",
+              })
+                .then((res) => res.json())
+                .then((data) => {
+                  if (data) history.push("/login");
+                });
             }}
           >
             Register
